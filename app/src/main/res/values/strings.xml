@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">PixeryApp</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="speed_curve_button">Speed curve button</string>
+    <string name="starting_speed">Starting Speed :</string>
+    <string name="middle_speed">Middle Speed :</string>
+    <string name="ending_speed">Ending Speed :</string>
+    <string name="media_frame_index">Media Frame Index :</string>
+    <string name="current_project_frame">Current Project Frame :</string>
+    <string name="current_media_frame">Current Media Frame :</string>
+</resources>
