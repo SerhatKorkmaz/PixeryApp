@@ -23,14 +23,14 @@ class SliderFragment : Fragment(R.layout.fragment_slider) {
     private val binding get() = _binding!!
     private lateinit var viewModel: MainViewModel
     private lateinit var touchlistener : Slider.OnSliderTouchListener
-    var stopFlag : Boolean = true
+    var stopFlag : Boolean = false
     private lateinit var handler : Handler
     private lateinit var runnable : Runnable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -41,13 +41,19 @@ class SliderFragment : Fragment(R.layout.fragment_slider) {
 
         binding.apply {
 
+            slider.value = 0F
+
             handler = Handler(Looper.getMainLooper())
             runnable = Runnable {
-                    image.setImageResource((activity as MainActivity).ImageList[viewModel.currentIndex.value!!])
-                    Log.d("Animation", "Current Image index is ${viewModel.currentIndex.value} and delay is${viewModel.currentSpeed.value!!}")
-                    if(viewModel.currentIndex.value != 99 ) viewModel.currentIndex.value = viewModel.currentIndex.value!! + 1
-                    else viewModel.currentIndex.value = 0
-                    handler.postDelayed( runnable, viewModel.currentSpeed.value!!.toLong())
+                image.setImageResource((activity as MainActivity).ImageList[viewModel.currentIndex.value!!])
+                Log.d("Animation", "Current Image index is ${viewModel.currentIndex.value} and delay is${viewModel.currentSpeed.value!!}")
+                if(viewModel.currentIndex.value != 99 ) viewModel.currentIndex.value = viewModel.currentIndex.value!! + 1
+                else{
+                    viewModel.currentIndex.value = 0
+                    viewModel.setInitialSpeed()
+                }
+                viewModel.changeSpeed()
+                handler.postDelayed( runnable, viewModel.currentSpeed.value!!.toLong())
             }
 
 

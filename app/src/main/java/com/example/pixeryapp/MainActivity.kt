@@ -20,6 +20,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //region pro level coding here, dont look
+
         ImageList.add(R.drawable.p0)
         ImageList.add(R.drawable.p1)
         ImageList.add(R.drawable.p2)
@@ -120,6 +122,8 @@ class MainActivity : AppCompatActivity() {
         ImageList.add(R.drawable.p97)
         ImageList.add(R.drawable.p98)
         ImageList.add(R.drawable.p99)
+
+        //endregion
 
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.fragment_container) as NavHostFragment

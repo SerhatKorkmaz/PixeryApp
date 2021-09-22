@@ -1,11 +1,13 @@
 package com.example.pixeryapp.vm
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.example.pixeryapp.R
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class MainViewModel : ViewModel() {
 
     val startingSpeed : MutableLiveData<Double> by lazy {
         MutableLiveData<Double>()
@@ -72,6 +74,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     }
 
+    fun setInitialSpeed(){
+        currentSpeed.value = 33.0 / startingSpeed.value!!
+    }
+
     fun calculateFTMSS() { //FTMSS : first to middle step size
         val startSpeed = 33.0 / startingSpeed.value!!
         val targetSpeed = 33.0 / middleSpeed.value!!
@@ -79,7 +85,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         if (startSpeed != targetSpeed) {
 
-            firstToMiddleStepSize.value = (startSpeed - targetSpeed) / mIndex
+            if(mIndex != 0 ) firstToMiddleStepSize.value = (targetSpeed - startSpeed) / mIndex
+            else firstToMiddleStepSize.value = targetSpeed - startSpeed
 
         }
 
@@ -94,7 +101,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         if (startSpeed != targetSpeed) {
 
-            middleToEndStepSize.value = (startSpeed - targetSpeed) / (size - mIndex)
+            if(mIndex != size ) middleToEndStepSize.value = (targetSpeed - startSpeed) / (size - mIndex)
+            else middleToEndStepSize.value = (targetSpeed - startSpeed)
 
         }
 
@@ -106,11 +114,5 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         else currentSpeed.value = currentSpeed.value!! + middleToEndStepSize.value!!
     }
 
-    fun calculateMediaSize(){
-        val sSpeed = startingSpeed.value!!
-        val mSpeed = middleSpeed.value!!
-        val eSpeed = endingSpeed.value!!
-        val size = 100
-    }
 
 }

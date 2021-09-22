@@ -23,15 +23,14 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     private var  _binding : FragmentSettingsBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: MainViewModel
-    var stopFlag : Boolean = true
+    var stopFlag : Boolean = false
     private lateinit var handler : Handler
     private lateinit var runnable : Runnable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-
+        viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
 
     }
 
@@ -43,6 +42,11 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
         binding.apply {
 
+            sliderLastSpeed.value = viewModel.endingSpeed.value!!.toFloat()
+            sliderFrameIndex.value = viewModel.middleIndex.value!!.toFloat()
+            sliderCenterSpeed.value = viewModel.middleSpeed.value!!.toFloat()
+            sliderFirstSpeed.value = viewModel.startingSpeed.value!!.toFloat()
+
             image.setImageResource(viewModel.currentImage.value!!)
 
             handler = Handler(Looper.getMainLooper())
@@ -50,7 +54,11 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 image.setImageResource((activity as MainActivity).ImageList[viewModel.currentIndex.value!!])
                 Log.d("Animation", "Current Image index is ${viewModel.currentIndex.value} and delay is${viewModel.currentSpeed.value!!}")
                 if(viewModel.currentIndex.value != 99 ) viewModel.currentIndex.value = viewModel.currentIndex.value!! + 1
-                else viewModel.currentIndex.value = 0
+                else{
+                    viewModel.currentIndex.value = 0
+                    viewModel.setInitialSpeed()
+                }
+                viewModel.changeSpeed()
                 handler.postDelayed( runnable, viewModel.currentSpeed.value!!.toLong())
             }
 
@@ -62,7 +70,8 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                     Log.d("Slider Start Speed : ", slider.value.toString())
                     viewModel.startingSpeed.value = String.format("%.2f", slider.value).toDouble()
                     viewModel.calculateFTMSS()
-                    Log.d("New FTMSS is : ", viewModel.firstToMiddleStepSize.toString())
+                    viewModel.setInitialSpeed()
+                    Log.d("New FTMSS is : ", viewModel.firstToMiddleStepSize.value!!.toString())
                 }
             })
 
@@ -73,9 +82,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                     Log.d("Slider Center Speed : ", slider.value.toString())
                     viewModel.middleSpeed.value = String.format("%.2f", slider.value).toDouble()
                     viewModel.calculateFTMSS()
-                    Log.d("New FTMSS is : ", viewModel.firstToMiddleStepSize.toString())
+                    Log.d("New FTMSS is : ", viewModel.firstToMiddleStepSize.value!!.toString())
                     viewModel.calculateMTESS()
-                    Log.d("New MTESS is : ", viewModel.middleToEndStepSize.toString())
+                    Log.d("New MTESS is : ", viewModel.middleToEndStepSize.value!!.toString())
                 }
             })
 
@@ -86,9 +95,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                     Log.d("Slider Middle Frame : ", slider.value.toString())
                     viewModel.middleIndex.value = slider.value.toInt()
                     viewModel.calculateFTMSS()
-                    Log.d("New FTMSS is : ", viewModel.firstToMiddleStepSize.toString())
+                    Log.d("New FTMSS is : ", viewModel.firstToMiddleStepSize.value!!.toString())
                     viewModel.calculateMTESS()
-                    Log.d("New MTESS is : ", viewModel.middleToEndStepSize.toString())
+                    Log.d("New MTESS is : ", viewModel.middleToEndStepSize.value!!.toString())
                 }
             })
 
@@ -99,7 +108,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                     Log.d("Slider Last Speed : ", slider.value.toString())
                     viewModel.endingSpeed.value = String.format("%.2f", slider.value).toDouble()
                     viewModel.calculateMTESS()
-                    Log.d("New MTESS is : ", viewModel.middleToEndStepSize.toString())
+                    Log.d("New MTESS is : ", viewModel.middleToEndStepSize.value!!.toString())
                 }
             })
 
