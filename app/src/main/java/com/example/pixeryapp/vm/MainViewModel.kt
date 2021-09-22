@@ -3,6 +3,7 @@ package com.example.pixeryapp.vm
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.example.pixeryapp.R
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -50,6 +51,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         MutableLiveData<Int>()
     }
 
+    val currentImage : MutableLiveData<Int> by lazy {
+        MutableLiveData<Int>()
+    }
+
 
     init {
         currentIndex.value = 0
@@ -63,6 +68,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         middleToEndStepSize.value = 0.0
         currentSpeed.value = 33.0
         mediaSize.value = 100
+        currentImage.value = R.drawable.p0
+
     }
 
     fun calculateFTMSS() { //FTMSS : first to middle step size

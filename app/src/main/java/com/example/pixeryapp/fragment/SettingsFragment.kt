@@ -1,6 +1,8 @@
 package com.example.pixeryapp.fragment
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -13,17 +15,23 @@ import com.example.pixeryapp.databinding.FragmentSliderBinding
 import com.example.pixeryapp.vm.MainViewModel
 import com.google.android.material.slider.Slider
 
+
+
+
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
     private var  _binding : FragmentSettingsBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: MainViewModel
     var stopFlag : Boolean = true
+    private lateinit var handler : Handler
+    private lateinit var runnable : Runnable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+
 
     }
 
@@ -33,9 +41,19 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
         _binding = FragmentSettingsBinding.bind(view)
 
-
-
         binding.apply {
+
+            image.setImageResource(viewModel.currentImage.value!!)
+
+            handler = Handler(Looper.getMainLooper())
+            runnable = Runnable {
+                image.setImageResource((activity as MainActivity).ImageList[viewModel.currentIndex.value!!])
+                Log.d("Animation", "Current Image index is ${viewModel.currentIndex.value} and delay is${viewModel.currentSpeed.value!!}")
+                if(viewModel.currentIndex.value != 99 ) viewModel.currentIndex.value = viewModel.currentIndex.value!! + 1
+                else viewModel.currentIndex.value = 0
+                handler.postDelayed( runnable, viewModel.currentSpeed.value!!.toLong())
+            }
+
 
             sliderFirstSpeed.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
                 override fun onStartTrackingTouch(slider: Slider) {}
@@ -86,6 +104,8 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             })
 
             bPlayPause.setOnClickListener {
+                if(!stopFlag) handler.post(runnable)
+                else handler.removeCallbacks(runnable)
                 stopFlag = !stopFlag
                 Log.d("stopFlag" , "current value of stopFlag is ${stopFlag}")
             }
@@ -106,16 +126,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 tvFinishSpeed.text = getString(R.string.ending_speed) + endingSpeed.toString()
             })
 
-            /* kotlin.run {
-                while (!stopFlag)
-                for (i in /*viewModel.currentIndex.value!!*/0 .. 99){
-                    image.setImageResource((activity as MainActivity).ImageList[i])
-                    Thread.sleep(viewModel.currentSpeed.value!!.toLong())
-                    viewModel.currentIndex.value = i
-                    viewModel.changeSpeed()
-                    //viewModel.currentIndex.value!!
-                }
-            }*/
+            viewModel.currentImage.observe(viewLifecycleOwner, Observer { Image ->
+                image.setImageResource(Image)
+            })
         }
 
     }
